@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Member Profile</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- Reset & Core --- */
+        :root {
+            --bg-dark: #000;
+            --text-light: #fff;
+            --text-dark: #111;
+            --text-gray: #666;
+            --transition-speed: 0.6s;
+            --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #fff;
+            overflow: hidden;
+            /* App-like structure */
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* --- Fixed Header (Background Layer) --- */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            /* Always full height behind content */
+            background: var(--bg-dark);
+            z-index: 1;
+        }
+
+        /* Single Hero Image */
+        .hero-single-wrapper {
+            position: absolute;
+            inset: 0;
+            /* Full screen */
+            opacity: 1;
+            transition: opacity 0.6s ease;
+        }
+
+        .header.active .hero-single-wrapper {
+            opacity: 0;
+            /* Fade out when content active */
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.8;
+            transition: opacity 1s ease;
+        }
+
+        /* Marquee Strip (Top 200px / 20vh) */
+        .marquee-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20vh;
+            /* Fixed strip height */
+            background: #000;
+            z-index: 2;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        .header.active .marquee-container {
+            opacity: 1;
+        }
+
+        .marquee-track {
+            display: flex;
+            height: 100%;
+            width: max-content;
+            animation: scroll 240s linear infinite;
+            /* 3x Slower (80s -> 240s) */
+            will-change: transform;
+        }
+
+        .marquee-item {
+            height: 100%;
+            width: auto;
+            /* aspect-ratio removed for natural scaling */
+            object-fit: contain;
+            margin-right: 2px;
+            /* Optional: prevent images touching */
+        }
+
+        @keyframes scroll {
+            to {
+                transform: translateX(-50%);
+            }
+        }
+
+        /* --- Credits --- */
+        .photo-credit {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 0.875rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            z-index: 5;
+            opacity: 0;
+            /* Hidden by default */
+            transition: opacity 1s ease;
+            pointer-events: none;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* --- Hero Text & Trigger --- */
+        .hero-content {
+            position: absolute;
+            bottom: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            color: var(--text-light);
+            transition: all 0.5s ease;
+            width: 100%;
+            z-index: 10;
+        }
+
+        .header.active .hero-content {
+            opacity: 0;
+            transform: translate(-50%, -20px);
+            pointer-events: none;
+        }
+
+        .name {
+            font-size: 4rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+        }
+
+        .role {
+            font-size: 1.25rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            opacity: 0.9;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
+        }
+
+        .action-btn {
+            margin-top: 2rem;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            color: white;
+            animation: bounce 2s infinite;
+            padding: 1rem;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            20%,
+            50%,
+            80%,
+            100% {
+                transform: translateY(0);
+            }
+
+            40% {
+                transform: translateY(-10px);
+            }
+
+            60% {
+                transform: translateY(-5px);
+            }
+        }
+
+        /* --- Main Content Drawer (Slide Up) --- */
+        .content-drawer {
+            position: fixed;
+            top: 20vh;
+            /* Stops at 20vh from top */
+            left: 0;
+            width: 100%;
+            height: 80vh;
+            /* Fill rest of screen */
+            background: #fff;
+            z-index: 20;
+            border-radius: 0;
+            /* Flat look */
+            transform: translateY(100vh);
+            /* Start Off-screen */
+            transition: transform var(--transition-speed) var(--ease);
+            overflow-y: auto;
+            /* Scrollable internal content */
+            will-change: transform;
+        }
+
+        .content-drawer.active {
+            transform: translateY(0);
+        }
+
+        .inner-content {
+            padding: 4rem 2rem 0;
+            /* Removing bottom padding for full footer attach */
+            max-width: 900px;
+            margin: 0 auto;
+            min-height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- Typography & Sections --- */
+        .section-label {
+            font-size: 0.875rem;
+            color: #999;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 2rem;
+            display: inline-block;
+            border-bottom: 2px solid #000;
+            padding-bottom: 0.5rem;
+        }
+
+        .bio-text {
+            font-size: 1.25rem;
+            line-height: 1.8;
+            color: #333;
+            font-weight: 300;
+            margin-bottom: 4rem;
+            white-space: pre-line;
+            /* Support Newlines */
+        }
+
+        .grid-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 5rem;
+            border-top: 1px solid #eee;
+            padding-top: 3rem;
+        }
+
+        .subsection h3 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: #111;
+        }
+
+        .list-item {
+            margin-bottom: 1rem;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .list-item span.year {
+            color: #888;
+            font-weight: 300;
+            min-width: 60px;
+        }
+
+        .list-item span.title {
+            font-weight: 400;
+            color: #333;
+        }
+
+        /* Skills Section */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+        }
+
+        .skill-tag {
+            padding: 0.5rem 1rem;
+            background: #f5f5f5;
+            border-radius: 999px;
+            font-size: 0.875rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .contact-section {
+            background: #f9f9f9;
+            padding: 4rem 2rem;
+            text-align: center;
+            margin: 0 -2rem;
+            /* Bleed horizontal */
+            flex-grow: 1;
+            /* Push footer down if needed? No, just attach */
+        }
+
+        .email-link {
+            font-size: 1.5rem;
+            color: #000;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+
+        /* Footer */
+        .profile-footer {
+            text-align: center;
+            padding: 2rem;
+            color: #999;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            background: #f9f9f9;
+            border-top: 1px solid #eee;
+            margin: 0 -2rem;
+            /* Bleed */
+        }
+
+        /* Close Button */
+        .close-btn {
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            width: 3.5rem;
+            height: 3.5rem;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            z-index: 50;
+            transition: all 0.3s;
+        }
+
+        .close-btn:hover {
+            background: white;
+            color: black;
+            transform: rotate(90deg);
+        }
+
+        @media (max-width: 768px) {
+            .name {
+                font-size: 3rem;
+            }
+
+            .grid-section {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Header (Visual Background Layer) -->
+    <header class="header" id="header">
+        <div class="hero-single-wrapper">
+            <img src="" alt="Hero" id="hero-img" class="hero-img">
+        </div>
+
+        <!-- Photo Credit Element -->
+        <div class="photo-credit" id="photo-credit">
+            <span id="credit-name"></span>
+        </div>
+
+        <div class="marquee-container">
+            <div class="marquee-track" id="marquee-track"></div>
+        </div>
+
+        <div class="hero-content">
+            <h1 class="name" id="name">Loading...</h1>
+            <p class="role" id="role">...</p>
+            <div class="action-btn" id="expand-btn">
+                <span>點擊箭頭顯示更多</span>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    style="margin-top: 0.5rem;">
+                    <path d="M7 13L12 18L17 13M12 6L12 17" />
+                </svg>
+            </div>
+        </div>
+
+        <a href="index.html" class="close-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M6 18L18 6M6 6l12 12" />
+            </svg>
+        </a>
+    </header>
+
+    <!-- Drawer Content (Slides Up) -->
+    <div class="content-drawer" id="drawer">
+        <div class="inner-content">
+            <div class="section-label">ABOUT</div>
+            <p class="bio-text" id="bio"></p>
+
+            <!-- Merged Events Section -->
+            <div class="grid-section" style="grid-template-columns: 1fr;">
+                <div class="subsection">
+                    <h3>活動參與經歷</h3>
+                    <div id="events-list"></div>
+                </div>
+            </div>
+
+            <div class="grid-section">
+                <div class="subsection">
+                    <h3>標籤</h3>
+                    <div class="skills-container" id="tags-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+                <div class="subsection">
+                    <h3 id="custom-link-title">LINKS</h3>
+                    <div id="custom-link-list">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="contact-section">
+                <p style="margin-bottom:1rem;color:#666;">FOLLOW ME</p>
+                <div id="social-links" style="display: flex; gap: 1.5rem; justify-content: center;">
+                    <!-- Social Links injected here -->
+                </div>
+            </div>
+
+            <footer class="profile-footer">
+                &copy; 2025 Afu Huli. All rights reserved.
+            </footer>
+        </div>
+    </div>
+
+    <script>
+        // --- Data ---
+        const profiles = {
+            'afu': {
+                name: '阿福',
+                role: '🦊小萌新 📷攝影 🎶音樂 ',
+                email: 'afu@teamsite.com',
+                bioFile: 'afu_about.txt',
+                tags: ['攝影', '毛毛攝影', '馬內', '交通'],
+                images: ['images/AFU_BG/BG2.jpeg'], // Logic below handles hero overwrite
+                marqueeImages: [
+                    'images/AFU_Marquee/MQ_001.jpg', 'images/AFU_Marquee/MQ_002.jpg', 'images/AFU_Marquee/MQ_003.jpg',
+                    'images/AFU_Marquee/MQ_004.jpg', 'images/AFU_Marquee/MQ_005.jpg', 'images/AFU_Marquee/MQ_006.jpg',
+                    'images/AFU_Marquee/MQ_007.jpg', 'images/AFU_Marquee/MQ_008.jpg', 'images/AFU_Marquee/MQ_009.jpg',
+                    'images/AFU_Marquee/MQ_010.jpg', 'images/AFU_Marquee/MQ_011.jpg', 'images/AFU_Marquee/MQ_012.jpg',
+                    'images/AFU_Marquee/MQ_013.jpg', 'images/AFU_Marquee/MQ_014.jpg', 'images/AFU_Marquee/MQ_015.jpg',
+                    'images/AFU_Marquee/MQ_016.jpg', 'images/AFU_Marquee/MQ_017.jpg', 'images/AFU_Marquee/MQ_018.jpg',
+                    'images/AFU_Marquee/MQ_019.jpg', 'images/AFU_Marquee/MQ_020.jpg', 'images/AFU_Marquee/MQ_021.jpg',
+                    'images/AFU_Marquee/MQ_022.jpg', 'images/AFU_Marquee/MQ_023.jpg', 'images/AFU_Marquee/MQ_024.jpg'
+                ],
+                events: [
+                    { year: '2024 01', title: 'BeastAges I' },
+                    { year: '2024 03', title: 'Furryday 獸曜日=じゅうようび' },
+                    { year: '2024 09', title: '獸曜日-月圓盛宴' },
+                    { year: '2024 10', title: '獸無限 Infurnity 2024 - 獸與地下城' },
+                    { year: '2024 12', title: '獸曜日-年末快閃活動' },
+                    { year: '2025 02', title: '以茶會毛 2025 - 百毛夜行' },
+                    { year: '2025 04', title: '獸曜日-獸燦爛漫祭' },
+                    { year: '2025 07', title: 'UTFG2025 - 學園祭' },
+                    { year: '2025 10', title: 'Infurnity 2025 - 萬獸方城市' }
+                ],
+                customLinkSection: {
+                    title: '作品集',
+                    items: [
+                        { label: '中城毛事', url: 'https://23weif.wixsite.com/afu2025' }
+                    ]
+                }
+            },
+            'xiaoti': {
+                name: '曉禔',
+                role: '🦊仙氣散逸  傳遞溫暖的白色狐狸🐾',
+                email: 'xiaoti@teamsite.com',
+                bioFile: 'xiaoti_about.txt',
+                tags: ['毛毛', '仙氣', '溫暖', '狐狸'],
+                images: [
+                    'images/XiaoTI_BG/img_05.jpg', 'images/XiaoTI_BG/img_12.jpg', 'images/XiaoTI_BG/img_01.jpg',
+                    'images/XiaoTI_BG/img_15.jpg', 'images/XiaoTI_BG/img_03.jpg', 'images/XiaoTI_BG/img_09.jpg',
+                    'images/XiaoTI_BG/img_16.jpg', 'images/XiaoTI_BG/img_02.jpg', 'images/XiaoTI_BG/img_08.jpg',
+                    'images/XiaoTI_BG/img_11.jpeg', 'images/XiaoTI_BG/img_14.jpg', 'images/XiaoTI_BG/img_04.JPG',
+                    'images/XiaoTI_BG/img_06.jpg', 'images/XiaoTI_BG/img_13.jpg', 'images/XiaoTI_BG/img_10.jpg',
+                    'images/XiaoTI_BG/img_07.jpg'
+                ],
+                events: [
+                    { year: '2025 02', title: '以茶會毛 2025 - 百毛夜行' },
+                    { year: '2025 04', title: '獸曜日-獸燦爛漫祭' },
+                    { year: '2025 04', title: '中城躲貓貓' },
+                    { year: '2025 07', title: 'UTFG2025 - 學園祭' },
+                    { year: '2025 10', title: 'Infurnity 2025 - 萬獸方城市' }
+                ],
+                customLinkSection: {
+                    title: '相片集',
+                    items: [
+                        { label: '相片(FB)', url: 'https://www.facebook.com/25XiaoTi/photos' }
+                    ]
+                }
+            }
+        };
+
+        // --- Init ---
+        async function init() {
+            const params = new URLSearchParams(window.location.search);
+            const id = params.get('id') || 'xiaoti';
+            const data = profiles[id];
+
+            // 1. Fetch JSON Credits
+            let creditsData = [];
+            try {
+                const res = await fetch('image_credits.json');
+                const json = await res.json();
+                creditsData = json[id] || [];
+            } catch (e) { console.log('Credits fetch error or file missing'); }
+
+            // 2. Fetch Bio Text
+            let bioText = '';
+            if (data && data.bioFile) {
+                try {
+                    const res = await fetch(data.bioFile);
+                    if (res.ok) {
+                        bioText = await res.text();
+                    } else {
+                        bioText = 'About content not found.';
+                    }
+                } catch (e) {
+                    console.error('Bio fetch error:', e);
+                    bioText = 'Error loading content.';
+                }
+            }
+
+            // 3. Fetch Social Links
+            let socialData = {};
+            try {
+                const res = await fetch('social_links.json');
+                const json = await res.json();
+                socialData = json[id] || {};
+            } catch (e) { console.log('Social links error'); }
+
+            // 4. Resolve Images (Credits JSON is Source of Truth for Hero)
+            if (creditsData.length > 0) {
+                data.images = creditsData.map(item => item.filename);
+            } else if (!data.images) {
+                data.images = [];
+            }
+
+            if (data) {
+                // Populate Text
+                document.title = data.name + ' - Profile';
+                document.getElementById('name').textContent = data.name;
+                document.getElementById('role').textContent = data.role;
+                document.getElementById('bio').textContent = bioText || 'Waiting for content...';
+
+                // Populate Lists
+                const renderList = (items, id, isTag = false) => {
+                    const container = document.getElementById(id);
+                    container.innerHTML = '';
+                    if (!items) return;
+                    items.forEach(item => {
+                        const el = document.createElement('div');
+                        if (isTag) {
+                            el.className = 'skill-tag';
+                            el.textContent = item;
+                        } else {
+                            el.className = 'list-item';
+                            el.innerHTML = `<span class="year">${item.year}</span><span class="title">${item.title}</span>`;
+                        }
+                        container.appendChild(el);
+                    });
+                };
+
+                renderList(data.events, 'events-list');
+                renderList(data.tags, 'tags-list', true);
+
+                // Custom Link Section (Portfolio/Photos)
+                if (data.customLinkSection) {
+                    document.getElementById('custom-link-title').textContent = data.customLinkSection.title;
+                    const linkContainer = document.getElementById('custom-link-list');
+                    linkContainer.innerHTML = '';
+                    data.customLinkSection.items.forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'list-item';
+                        div.style.alignItems = 'center';
+                        div.innerHTML = `
+                            <span class="title" style="flex-grow:1; font-weight:500;">${item.label}</span>
+                            <a href="${item.url}" target="_blank" style="color:#000; text-decoration:none; border-bottom:1px solid currentColor; font-size:0.9rem;">View ↗</a>
+                        `;
+                        linkContainer.appendChild(div);
+                    });
+                }
+
+                // Render Social Links
+                const socialContainer = document.getElementById('social-links');
+                socialContainer.innerHTML = '';
+                for (const [platform, url] of Object.entries(socialData)) {
+                    if (url) {
+                        const link = document.createElement('a');
+                        link.href = url;
+                        link.target = '_blank';
+                        link.className = 'email-link';
+                        link.style.textDecoration = 'none';
+                        link.style.fontSize = '1rem';
+                        link.style.borderBottom = '1px solid currentColor';
+                        link.textContent = platform.toUpperCase();
+                        socialContainer.appendChild(link);
+                    }
+                }
+
+                // --- 5. Slideshow Logic ---
+                const heroImgEl = document.getElementById('hero-img');
+                const creditEl = document.getElementById('photo-credit');
+                const creditNameEl = document.getElementById('credit-name');
+
+                // Initial Image
+                if (data.images.length > 0) {
+                    heroImgEl.src = data.images[0];
+                    // Initial Credit
+                    if (creditsData[0] && creditsData[0].photographer) {
+                        creditNameEl.textContent = creditsData[0].photographer;
+                        creditEl.style.opacity = '1';
+                    }
+
+                    // Preload
+                    data.images.forEach(src => new Image().src = src);
+                }
+
+                // Interval
+                if (data.images.length > 1) {
+                    let fsIndex = 0;
+                    setInterval(() => {
+                        // Only if active (visible)
+                        if (!document.getElementById('header').classList.contains('active')) {
+                            // Fade Out ALL
+                            heroImgEl.style.opacity = '0';
+                            creditEl.style.opacity = '0'; // Hide name
+
+                            setTimeout(() => {
+                                // Switch
+                                fsIndex = (fsIndex + 1) % data.images.length;
+                                heroImgEl.src = data.images[fsIndex];
+
+                                // Update Credit Text
+                                const nextCredit = creditsData[fsIndex]?.photographer || '';
+                                creditNameEl.textContent = nextCredit;
+
+                                // Fade In
+                                requestAnimationFrame(() => {
+                                    setTimeout(() => {
+                                        heroImgEl.style.opacity = '0.8';
+                                        if (nextCredit) {
+                                            creditEl.style.opacity = '1'; // Show name only if exists
+                                        }
+                                    }, 50);
+                                });
+                            }, 1000); // 1s wait matches transition
+                        }
+                    }, 4000);
+                }
+
+                // --- 5. Marquee Logic ---
+                const track = document.getElementById('marquee-track');
+                const marqueeSource = (data.marqueeImages && data.marqueeImages.length > 0) ? data.marqueeImages : data.images;
+
+                if (marqueeSource.length > 0) {
+                    // Preload if different
+                    if (marqueeSource !== data.images) {
+                        marqueeSource.forEach(src => new Image().src = src);
+                    }
+
+                    const loop = [...marqueeSource, ...marqueeSource, ...marqueeSource];
+                    loop.forEach(src => {
+                        const img = document.createElement('img');
+                        img.src = src;
+                        img.className = 'marquee-item';
+                        track.appendChild(img);
+                    });
+                }
+            }
+        }
+
+        init();
+
+        // --- Interaction ---
+        const btn = document.getElementById('expand-btn');
+        const header = document.getElementById('header');
+        const drawer = document.getElementById('drawer');
+        const marqueeTrack = document.getElementById('marquee-track');
+
+        btn.addEventListener('click', () => {
+            header.classList.add('active');
+            drawer.classList.add('active');
+        });
+
+        // Close on Header Click
+        header.addEventListener('click', (e) => {
+            if (header.classList.contains('active') && e.clientY < window.innerHeight * 0.2) {
+                header.classList.remove('active');
+                drawer.classList.remove('active');
+                drawer.scrollTop = 0;
+            }
+        });
+
+    </script>
+</body>
+
+</html>

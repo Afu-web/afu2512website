@@ -1,0 +1,82 @@
+{
+    "afu": [
+        {
+            "filename": "images/AFU_BG/BG1.png",
+            "photographer": ""
+        },
+        {
+            "filename": "images/AFU_BG/BG2.jpeg",
+            "photographer": ""
+        },
+        {
+            "filename": "images/AFU_BG/BG3.png",
+            "photographer": ""
+        }
+    ],
+    "xiaoti": [
+        {
+            "filename": "images/XiaoTI_BG/img_05.jpg",
+            "photographer": "Photo by 艾斯赤嵐"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_12.jpg",
+            "photographer": "Photo by Shelby"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_01.jpg",
+            "photographer": "Photo by Sanu Keçisy"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_15.jpg",
+            "photographer": "Photo by 魚松"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_03.jpg",
+            "photographer": "Photo by 魚松"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_09.jpg",
+            "photographer": "Photo by 晴雲"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_16.jpg",
+            "photographer": "Photo by 魚松"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_02.jpg",
+            "photographer": "Photo by Sanu Keçisy"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_08.jpg",
+            "photographer": "Photo by 夢夜"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_11.jpeg",
+            "photographer": "Photo by 晴雲"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_14.jpg",
+            "photographer": "Photo by 白喵"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_04.JPG",
+            "photographer": "Photo by 魚松"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_06.jpg",
+            "photographer": "Photo by 戀風"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_13.jpg",
+            "photographer": "Photo by Shelby"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_10.jpg",
+            "photographer": "Photo by 淚熐"
+        },
+        {
+            "filename": "images/XiaoTI_BG/img_07.jpg",
+            "photographer": "Photo by 許尼"
+        }
+    ]
+}

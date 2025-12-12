@@ -1,0 +1,612 @@
+/* CSS Variables & Reset */
+:root {
+    --primary-blue: #2563eb;
+    --primary-blue-light: #eff6ff;
+    --text-dark: #111827;
+    --text-gray: #4b5563;
+    --bg-white: rgba(255, 255, 255, 0.85);
+    --border-color: #e5e7eb;
+    --nav-height: 64px;
+
+    --split-anim-duration: 700ms;
+    --split-anim-ease: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    color: var(--text-dark);
+    line-height: 1.5;
+    overflow-x: hidden;
+    /* Prevent horizontal scroll */
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.flex-col {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+/* Navbar Components */
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: var(--nav-height);
+    background-color: var(--bg-white);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border-bottom: 1px solid var(--border-color);
+    z-index: 50;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.logo a {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.text-highlight {
+    color: var(--primary-blue);
+}
+
+.nav-links {
+    display: flex;
+    gap: 2rem;
+}
+
+.nav-item {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-gray);
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    transition: all 0.2s;
+}
+
+.nav-item:hover,
+.nav-item.active {
+    color: var(--primary-blue);
+    background-color: var(--primary-blue-light);
+}
+
+.mobile-only {
+    display: none;
+}
+
+/* Mobile Menu */
+@media (max-width: 768px) {
+    .desktop-only {
+        display: none;
+    }
+
+    .mobile-only {
+        display: block;
+    }
+
+    .mobile-menu {
+        background-color: white;
+        border-bottom: 1px solid var(--border-color);
+        padding: 0.5rem 0;
+    }
+
+    .mobile-menu.hidden {
+        display: none;
+    }
+
+    .mobile-nav-item {
+        display: block;
+        padding: 0.75rem 1rem;
+        font-weight: 500;
+        color: var(--text-gray);
+    }
+
+    .mobile-nav-item:hover,
+    .mobile-nav-item.active {
+        background-color: var(--primary-blue-light);
+        color: var(--primary-blue);
+    }
+
+    .menu-toggle {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 0.375rem;
+    }
+
+    .menu-toggle:hover {
+        background-color: #f3f4f6;
+    }
+}
+
+/* Split Screen Layout */
+.split-container {
+    display: flex;
+    /* Height: 100vh - nav height */
+    /* Height: 100vh (Navbar removed) */
+    height: 100vh;
+    margin-top: 0;
+    background-color: #000;
+    position: relative;
+    overflow: hidden;
+}
+
+.split {
+    position: relative;
+    height: 100%;
+    /* Default width: 50% */
+    width: 50%;
+    transition: width var(--split-anim-duration) var(--split-anim-ease);
+    overflow: hidden;
+    cursor: pointer;
+}
+
+/* Hover States controlled by JS classes on Parent */
+.split-container.hover-left .left {
+    width: 65%;
+}
+
+.split-container.hover-left .right {
+    width: 35%;
+}
+
+.split-container.hover-right .right {
+    width: 65%;
+}
+
+.split-container.hover-right .left {
+    width: 35%;
+}
+
+.split-link {
+    display: block;
+    width: 100%;
+    height: 100%;
+    position: relative;
+    text-decoration: none;
+}
+
+/* Background Image */
+.bg-image {
+    position: absolute;
+    inset: 0;
+    /* top right bottom left: 0 */
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    transition: transform var(--split-anim-duration) var(--split-anim-ease);
+}
+
+/* Zoom effect on active */
+.split-container.hover-left .left .bg-image,
+.split-container.hover-right .right .bg-image {
+    transform: scale(1.1);
+}
+
+/* Overlay */
+.overlay {
+    position: absolute;
+    inset: 0;
+    background-color: #000;
+    opacity: 0.6;
+    transition: opacity var(--split-anim-duration) var(--split-anim-ease);
+    z-index: 10;
+}
+
+/* Remove overlay on active */
+.split-container.hover-left .left .overlay,
+.split-container.hover-right .right .overlay {
+    opacity: 0.1;
+}
+
+/* Content */
+.content {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.member-name {
+    font-size: 3rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin-bottom: 1rem;
+    transition: all var(--split-anim-duration) var(--split-anim-ease);
+}
+
+/* Name Animation: Move up and scale on active */
+.split-container.hover-left .left .member-name,
+.split-container.hover-right .right .member-name {
+    transform: translateY(-1rem) scale(1.1);
+}
+
+.action-btn-wrapper {
+    max-height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: all var(--split-anim-duration) var(--split-anim-ease);
+}
+
+/* Button Reveal on active */
+.split-container.hover-left .left .action-btn-wrapper,
+.split-container.hover-right .right .action-btn-wrapper {
+    max-height: 5rem;
+    opacity: 1;
+}
+
+.action-btn {
+    display: inline-block;
+    padding: 0.5rem 1.5rem;
+    border: 1px solid white;
+    border-radius: 9999px;
+    /* full rounded */
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    font-weight: 600;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.action-btn:hover {
+    background-color: white;
+    color: black;
+}
+
+/* Mobile Responsive - Stack instead of Split? 
+   No, user asked for Split. But on very small screens, 
+   split might be unusable. Let's stack them on mobile.
+*/
+@media (max-width: 640px) {
+    .split-container {
+        flex-direction: column;
+    }
+
+    .split {
+        width: 100% !important;
+        height: 50%;
+        transition: height var(--split-anim-duration) var(--split-anim-ease);
+    }
+
+    /* On mobile, we might trigger expand on height instead of width?
+       Or just simplify interaction. Let's keep width transition ignored and do height.
+    */
+    .split-container.hover-left .left {
+        height: 65%;
+        width: 100%;
+    }
+
+    .split-container.hover-left .right {
+        height: 35%;
+        width: 100%;
+    }
+
+    .split-container.hover-right .right {
+        height: 65%;
+        width: 100%;
+    }
+
+    .split-container.hover-right .left {
+        height: 35%;
+        width: 100%;
+    }
+}
+
+/* Footer */
+.footer {
+    background-color: #f9fafb;
+    border-top: 1px solid var(--border-color);
+    padding: 3rem 0;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    color: #9ca3af;
+}
+
+.icon {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.social-links a:hover {
+    color: #6b7280;
+}
+
+/* --- Profile Page Styles --- */
+.profile-page {
+    background-color: white;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.close-btn {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
+    width: 3.5rem;
+    height: 3.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    /* Glassmorphism */
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    color: white;
+    /* White icon */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.close-btn:hover {
+    background: white;
+    color: black;
+    transform: rotate(90deg) scale(1.1);
+}
+
+.profile-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-hero {
+    height: 100vh;
+    /* Start Full Screen */
+    width: 100%;
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: flex-end;
+    /* Text at bottom */
+    justify-content: center;
+    padding-bottom: 8rem;
+    /* More space for scroll indicator */
+    overflow: hidden;
+    transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    /* Smooth shrink transition */
+}
+
+.profile-hero.shrunk {
+    height: 20vh;
+    /* Top 1/5th */
+    padding-bottom: 0;
+    /* Remove padding when shrunk */
+}
+
+.scroll-indicator {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    animation: bounce 2s infinite;
+    cursor: pointer;
+    /* Interactive */
+}
+
+.profile-hero.shrunk .scroll-indicator {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.scroll-text {
+    font-size: 0.875rem;
+    letter-spacing: 0.1em;
+    font-weight: 300;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+@keyframes bounce {
+
+    0%,
+    20%,
+    50%,
+    80%,
+    100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-10px);
+    }
+
+    60% {
+        transform: translateY(-5px);
+    }
+}
+
+.hero-image-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    transition: opacity 0.5s ease;
+}
+
+.profile-hero.shrunk .hero-image-wrapper {
+    opacity: 0;
+    /* Hide single image in strip mode */
+}
+
+/* Marquee Styles */
+.marquee-wrapper {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    opacity: 0;
+    pointer-events: none;
+    display: flex;
+    align-items: center;
+    background: black;
+    transition: opacity 0.5s ease;
+}
+
+.profile-hero.shrunk .marquee-wrapper {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.marquee-track {
+    display: flex;
+    height: 100%;
+    /* Width will be set dynamically or implicitly huge */
+    animation: marquee-scroll 40s linear infinite;
+}
+
+.marquee-img {
+    height: 100%;
+    width: auto;
+    aspect-ratio: 3/2;
+    /* Maintain ratio */
+    object-fit: cover;
+    opacity: 0.8;
+}
+
+@keyframes marquee-scroll {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-50%);
+    }
+
+    /* Assumption: We duplicate images to make it seamless */
+}
+
+.hero-text {
+    text-align: center;
+    color: white;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.profile-hero.shrunk .hero-text {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+}
+
+.profile-name {
+    font-size: 4rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.02em;
+}
+
+.profile-role {
+    font-size: 1.25rem;
+    font-weight: 300;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.9;
+}
+
+.hero-divider {
+    width: 60px;
+    height: 2px;
+    background-color: white;
+    margin: 2rem auto 0;
+}
+
+.profile-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    animation: fadeUp 1s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s backwards;
+}
+
+.bio-section h3 {
+    font-size: 0.875rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-gray);
+    margin-bottom: 1.5rem;
+}
+
+#profile-bio {
+    font-size: 1.25rem;
+    line-height: 1.8;
+    color: var(--text-dark);
+    margin-bottom: 4rem;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+}
+
+.detail-item h4 {
+    font-size: 0.875rem;
+    color: var(--text-gray);
+    margin-bottom: 0.5rem;
+}
+
+.detail-item p {
+    font-weight: 500;
+}
+
+@keyframes fadeUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .profile-name {
+        font-size: 3rem;
+    }
+
+    .details-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
